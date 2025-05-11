@@ -1,0 +1,23 @@
+{
+  "name": "daniel/json-parser-in-php",
+  "description": "Build a Json parser using php",
+  "autoload": {
+    "psr-4": {
+      "JsonParser\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "DanielHemmati",
+      "email": "danialups1997@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "pestphp/pest": "^3.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
