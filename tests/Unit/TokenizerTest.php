@@ -32,8 +32,10 @@ it('should tokenize empty object correctly', function () {
     expect($token2)->toBeInstanceOf(Token::class);
     expect($token2->type)->toBe(TokenType::BraceClose);
     expect($token2->value)->toBe('}');
-    
 
+    // third token
+    $token3 = $tokenizer->nextToken();
+    expect($token3)->toBeNull();
 });
 
 it('should throw exception for unexpected charater', function () {
