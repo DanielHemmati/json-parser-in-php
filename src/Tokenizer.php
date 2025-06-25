@@ -25,6 +25,7 @@ class Tokenizer
     public function nextToken(): ?Token
     {
         // skip white space
+        $this->skipWhiteSpace();
 
         // i don't think we ever hit this
         if ($this->pos >= $this->length) {
@@ -35,16 +36,57 @@ class Tokenizer
 
         return match ($char) {
             '{' => $this->emit(TokenType::BraceOpen),
-            '}' => $this->emit(TokenType::BraceOpen)
+            '}' => $this->emit(TokenType::BraceClose),
+            default => throw new \RuntimeException("Unexptcte character '{$char}' at {$this->line}:{$this->column}")
         };
     }
 
     private function emit(TokenType $type): Token
     {
-        return new Token($type, $this->input[$this->pos++]);
+        $token = new Token(
+            $type,
+            $this->input[$this->pos],
+            $this->line,
+            $this->column
+        );
+        $this->advanceCurosr();
+        return $token;
     }
 
-    private function skipWhiteSpace(): void {
+    /**
+     * Skip RFC-8259 insignificant whitespace (space, tab, LF, CR).
+     * @link https://datatracker.ietf.org/doc/html/rfc8259
+     */
+    private function skipWhiteSpace(): void
+    {
+        while ($this->pos < $this->length) {
+            $ch = $this->input[$this->pos];
 
+            if ($ch !== ' ' && $ch !== "\t" && $ch !== "\n" && $ch !== "\r") {
+                return;
+            }
+
+            $this->advanceCurosr();
+        }
+    }
+
+    private function advanceCurosr(): void
+    {
+        /**
+         * this is me just being defensive. b/c nextToken method already check this 
+         * as well
+         **/
+        if ($this->pos >= $this->length) {
+            return;
+        }
+
+        $ch = $this->input[$this->pos++];
+
+        if ($ch === "\n") {
+            $this->line++;
+            $this->column = 1;
+        } else {
+            $this->column++;
+        }
     }
 }

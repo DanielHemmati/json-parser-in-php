@@ -11,5 +11,7 @@ final class Token
     public function __construct(
         public readonly TokenType $type,
         public readonly mixed $value,
+        public readonly int $line,
+        public readonly int $column
     ) {}
 }
