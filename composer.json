@@ -1,0 +1,28 @@
+{
+  "name": "daniel/json-parser-in-php",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "DanielHemmati",
+      "email": "danialups1997@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "JsonParser\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "pestphp/pest": "^3.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
