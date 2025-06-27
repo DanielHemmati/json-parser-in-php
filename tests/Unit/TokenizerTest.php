@@ -120,3 +120,12 @@ it('tokenizes a colon', function () {
     expect($tok->type)->toBe(TokenType::Colon);
     expect($tok->value)->toBe(':');
 });
+
+it('tokenizes a comma', function () {
+    $tokenizer = new Tokenizer(',');
+    $tok = $tokenizer->nextToken();
+
+    expect($tok)->not()->toBeNull();
+    expect($tok->type)->toBe(TokenType::Comma);
+    expect($tok->value)->toBe(',');
+});

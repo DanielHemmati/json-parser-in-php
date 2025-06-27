@@ -40,6 +40,7 @@ class Tokenizer
             '[' => $this->emit(TokenType::BracketOpen),
             ']' => $this->emit(TokenType::BracketClose),
             ':' => $this->emit(TokenType::Colon),
+            ',' => $this->emit(TokenType::Comma),
             '"' => $this->readString(),
             default => throw new \RuntimeException("Unexptcte character '{$char}' at {$this->line}:{$this->column}")
         };
