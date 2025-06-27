@@ -11,9 +11,9 @@ enum TokenType: string
     case BracketOpen = 'BracketOpen';
     case BracketClose = 'BracketClose';
     case String = 'String';
-    case Number = 'Number';
     case Colon  = 'Colon';
     case Comma = 'Comma';
+    case Number = 'Number';
     case True = 'True';
     case False = 'False';
     case Null = 'Null';

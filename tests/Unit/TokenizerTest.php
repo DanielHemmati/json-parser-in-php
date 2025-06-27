@@ -77,7 +77,7 @@ it('tokenize a simple JSON string', function () {
     expect($tok->value)->toBe('hello');
 
     expect($tokenizer->nextToken())->toBeNull();
-})->only();
+});
 
 it('keeps esace sequence intact', function () {
     $json = '"He said: \\"hi\\""'; // -> \"hi\"
@@ -87,7 +87,7 @@ it('keeps esace sequence intact', function () {
 
     expect($tok->type)->toBe(TokenType::String);
     expect($tok->value)->toBe('He said: \\"hi\\"');
-})->only();
+});
 
 
 it('handles unicode escape sequence intact', function () {
@@ -96,18 +96,27 @@ it('handles unicode escape sequence intact', function () {
     $tok = $tokenizer->nextToken();
 
     expect($tok->value)->toBe('unicode: \\u0041');
-})->only();
+});
 
 it('throws on unterminated string', function () {
     $tokenizer = new Tokenizer('"no-close');
 
     expect(fn() => $tokenizer->nextToken())
         ->toThrow(RuntimeException::class, 'Unterminated string literal');
-})->only();
+});
 
 it('throws on backslashes at end of input', function () {
     $tokenizer = new Tokenizer('"abc\\');
 
     expect(fn() => $tokenizer->nextToken())
         ->toThrow(RuntimeException::class, 'Unterminated escape sequence');
-})->only();
+});
+
+it('tokenizes a colon', function () {
+    $tokenizer = new Tokenizer(':');
+    $tok = $tokenizer->nextToken();
+
+    expect($tok)->not()->toBeNull();
+    expect($tok->type)->toBe(TokenType::Colon);
+    expect($tok->value)->toBe(':');
+});
