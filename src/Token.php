@@ -6,12 +6,12 @@ namespace JsonParser;
 
 use JsonParser\TokenType;
 
-final class Token
+final readonly class Token
 {
     public function __construct(
-        public readonly TokenType $type,
-        public readonly mixed $value,
-        public readonly int $line,
-        public readonly int $column
+        public TokenType $type,
+        public mixed $value,
+        public int $line,
+        public int $column
     ) {}
 }
