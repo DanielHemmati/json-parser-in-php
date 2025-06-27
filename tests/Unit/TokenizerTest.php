@@ -21,21 +21,18 @@ it('should return brace close', function () {
 it('should tokenize empty object correctly', function () {
     $tokenizer = new Tokenizer('{}');
 
-    // first token
-    $token1 = $tokenizer->nextToken();
-    expect($token1)->toBeInstanceOf(Token::class);
-    expect($token1->type)->toBe(TokenType::BraceOpen);
-    expect($token1->value)->toBe('{');
+    $firstToken = $tokenizer->nextToken();
+    expect($firstToken)->toBeInstanceOf(Token::class);
+    expect($firstToken->type)->toBe(TokenType::BraceOpen);
+    expect($firstToken->value)->toBe('{');
 
-    // second token
-    $token2 = $tokenizer->nextToken();
-    expect($token2)->toBeInstanceOf(Token::class);
-    expect($token2->type)->toBe(TokenType::BraceClose);
-    expect($token2->value)->toBe('}');
+    $secondToken = $tokenizer->nextToken();
+    expect($secondToken)->toBeInstanceOf(Token::class);
+    expect($secondToken->type)->toBe(TokenType::BraceClose);
+    expect($secondToken->value)->toBe('}');
 
-    // third token
-    $token3 = $tokenizer->nextToken();
-    expect($token3)->toBeNull();
+    $thirdToken = $tokenizer->nextToken();
+    expect($thirdToken)->toBeNull();
 });
 
 it('should throw exception for unexpected charater', function () {
