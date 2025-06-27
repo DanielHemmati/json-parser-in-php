@@ -39,6 +39,7 @@ class Tokenizer
             '}' => $this->emit(TokenType::BraceClose),
             '[' => $this->emit(TokenType::BracketOpen),
             ']' => $this->emit(TokenType::BracketClose),
+            '"' => $this->readString(),
             default => throw new \RuntimeException("Unexptcte character '{$char}' at {$this->line}:{$this->column}")
         };
     }
@@ -53,6 +54,45 @@ class Tokenizer
         );
         $this->advanceCurosr();
         return $token;
+    }
+
+    private function readString(): Token
+    {
+        $startLine = $this->line;
+        $startColumn = $this->column;
+
+        $this->advanceCurosr();
+
+        $value = '';
+        while ($this->pos < $this->length) {
+            $ch = $this->input[$this->pos];
+
+            if ($ch === '\\') {
+                $value .= $ch;
+                $this->advanceCurosr();
+                if ($this->pos >= $this->length) {
+                    throw new \RuntimeException("Unterminated escape sequence at end of input (started {$startLine}:{$startColumn}");
+                }
+                $value .= $this->input[$this->pos];
+                $this->advanceCurosr();
+                continue;
+            }
+
+            if ($ch === '"') {
+                break;
+            }
+
+            $value .= $ch;
+            $this->advanceCurosr();
+        }
+
+        if ($this->pos >= $this->length) {
+            throw new \RuntimeException("Unterminated string literal starting at {$startLine}:{$startColumn}");
+        }
+
+        $this->advanceCurosr();
+
+        return new Token(TokenType::String, $value, $startLine, $startColumn);
     }
 
     /**

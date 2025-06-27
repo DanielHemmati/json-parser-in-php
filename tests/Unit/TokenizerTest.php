@@ -40,14 +40,14 @@ it('should return bracket open', function () {
     $token = $tokenizer->nextToken();
     expect($token)->toBeInstanceOf(Token::class);
     expect($token->type)->toBe(TokenType::BracketOpen);
-})->only();
+});
 
 it('should return bracket close', function () {
     $tokenizer = new Tokenizer(']');
     $token = $tokenizer->nextToken();
     expect($token)->toBeInstanceOf(Token::class);
     expect($token->type)->toBe(TokenType::BracketClose);
-})->only();
+});
 
 it('should tokenize empty array correctly', function () {
     $tokenizer = new Tokenizer('[]');
@@ -64,11 +64,50 @@ it('should tokenize empty array correctly', function () {
 
     $thirdToken = $tokenizer->nextToken();
     expect($thirdToken)->toBeNull();
+});
+
+it('tokenize a simple JSON string', function () {
+    $tokenizer = new Tokenizer('"hello"');
+
+    /** @var Token $tok */
+    $tok = $tokenizer->nextToken();
+
+    expect($tok)->toBeInstanceOf(Token::class);
+    expect($tok->type)->toBe(TokenType::String);
+    expect($tok->value)->toBe('hello');
+
+    expect($tokenizer->nextToken())->toBeNull();
 })->only();
 
-it('should throw exception for unexpected charater', function () {
-    $tokenizer = new Tokenizer('x');
+it('keeps esace sequence intact', function () {
+    $json = '"He said: \\"hi\\""'; // -> \"hi\"
+    $tokenizer = new Tokenizer($json);
+
+    $tok = $tokenizer->nextToken();
+
+    expect($tok->type)->toBe(TokenType::String);
+    expect($tok->value)->toBe('He said: \\"hi\\"');
+})->only();
+
+
+it('handles unicode escape sequence intact', function () {
+    $tokenizer = new Tokenizer('"unicode: \\u0041"');
+
+    $tok = $tokenizer->nextToken();
+
+    expect($tok->value)->toBe('unicode: \\u0041');
+})->only();
+
+it('throws on unterminated string', function () {
+    $tokenizer = new Tokenizer('"no-close');
 
     expect(fn() => $tokenizer->nextToken())
-        ->toThrow(\RuntimeException::class);
-});
+        ->toThrow(RuntimeException::class, 'Unterminated string literal');
+})->only();
+
+it('throws on backslashes at end of input', function () {
+    $tokenizer = new Tokenizer('"abc\\');
+
+    expect(fn() => $tokenizer->nextToken())
+        ->toThrow(RuntimeException::class, 'Unterminated escape sequence');
+})->only();
