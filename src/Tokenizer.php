@@ -37,6 +37,8 @@ class Tokenizer
         return match ($char) {
             '{' => $this->emit(TokenType::BraceOpen),
             '}' => $this->emit(TokenType::BraceClose),
+            '[' => $this->emit(TokenType::BracketOpen),
+            ']' => $this->emit(TokenType::BracketClose),
             default => throw new \RuntimeException("Unexptcte character '{$char}' at {$this->line}:{$this->column}")
         };
     }

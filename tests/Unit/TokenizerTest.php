@@ -35,6 +35,37 @@ it('should tokenize empty object correctly', function () {
     expect($thirdToken)->toBeNull();
 });
 
+it('should return bracket open', function () {
+    $tokenizer = new Tokenizer('[');
+    $token = $tokenizer->nextToken();
+    expect($token)->toBeInstanceOf(Token::class);
+    expect($token->type)->toBe(TokenType::BracketOpen);
+})->only();
+
+it('should return bracket close', function () {
+    $tokenizer = new Tokenizer(']');
+    $token = $tokenizer->nextToken();
+    expect($token)->toBeInstanceOf(Token::class);
+    expect($token->type)->toBe(TokenType::BracketClose);
+})->only();
+
+it('should tokenize empty array correctly', function () {
+    $tokenizer = new Tokenizer('[]');
+
+    $firstToken = $tokenizer->nextToken();
+    expect($firstToken)->toBeInstanceOf(Token::class);
+    expect($firstToken->type)->toBe(TokenType::BracketOpen);
+    expect($firstToken->value)->toBe('[');
+
+    $secondToken = $tokenizer->nextToken();
+    expect($secondToken)->toBeInstanceOf(Token::class);
+    expect($secondToken->type)->toBe(TokenType::BracketClose);
+    expect($secondToken->value)->toBe(']');
+
+    $thirdToken = $tokenizer->nextToken();
+    expect($thirdToken)->toBeNull();
+})->only();
+
 it('should throw exception for unexpected charater', function () {
     $tokenizer = new Tokenizer('x');
 
