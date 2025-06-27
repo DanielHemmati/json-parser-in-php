@@ -42,7 +42,7 @@ class Tokenizer
             ':' => $this->emit(TokenType::Colon),
             ',' => $this->emit(TokenType::Comma),
             '"' => $this->readString(),
-            default => throw new \RuntimeException("Unexptcte character '{$char}' at {$this->line}:{$this->column}")
+            default => $this->readNumberOrLiteral()
         };
     }
 
@@ -97,6 +97,69 @@ class Tokenizer
         return new Token(TokenType::String, $value, $startLine, $startColumn);
     }
 
+    private function readNumberOrLiteral(): Token
+    {
+        $char = $this->input[$this->pos];
+
+        // if the number if sth like "-7" and you use is_numeric it will call 
+        // the readLiteral intead of readNumber, that's why we use 
+        // ctype_digit and we check for the negative using '-"
+        if (ctype_digit($char) || $char === '-' || $char === '.') {
+            return $this->readNumber();
+        }
+
+        return $this->readLiteral();
+    }
+
+    private function readNumber(): Token
+    {
+        $startLine = $this->line;
+        $startColumn = $this->column;
+        $start = $this->pos;
+
+        while ($this->pos < $this->length) {
+            $ch = $this->input[$this->pos];
+            if (
+                !ctype_digit($ch) &&
+                $ch !== '.' &&
+                $ch !== '-' &&
+                $ch !== 'e' &&
+                $ch !== 'E' &&
+                $ch !== '+'
+            ) {
+                break;
+            }
+            $this->advanceCurosr();
+        }
+
+        $literal = substr($this->input, $start, $this->pos - $start);
+
+        if (is_numeric($literal)) {
+            return new Token(TokenType::Number, +$literal, $startLine, $startColumn);
+        }
+        throw new \RuntimeException("Invalid number '$literal' at {$startLine}:{$startColumn}");
+    }
+
+    private function readLiteral(): Token
+    {
+        $startLine = $this->line;
+        $startColumn = $this->column;
+        $start = $this->pos;
+
+        while ($this->pos < $this->length && ctype_alpha($this->input[$this->pos])) {
+            $this->advanceCurosr();
+        }
+
+        $literal = substr($this->input, $start, $this->pos - $start);
+
+        return match ($literal) {
+            'true' => new Token(TokenType::True, true, $startLine, $startColumn),
+            'false' => new Token(TokenType::False, false, $startLine, $startColumn),
+            'null' => new Token(TokenType::Null, null, $startLine, $startColumn),
+            default => throw new \RuntimeException("Unexptected literal '$literal' at {$startLine}:{$startColumn}")
+        };
+    }
+
     /**
      * Skip RFC-8259 insignificant whitespace (space, tab, LF, CR).
      * @link https://datatracker.ietf.org/doc/html/rfc8259
@@ -124,6 +187,7 @@ class Tokenizer
             return;
         }
 
+        // $this->pos++ will move the position forward
         $ch = $this->input[$this->pos++];
 
         if ($ch === "\n") {

@@ -1,3 +1,3 @@
 <?php
 
-var_dump(ctype_space("a b"));
+var_dump(is_numeric("0."));

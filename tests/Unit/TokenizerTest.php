@@ -129,3 +129,22 @@ it('tokenizes a comma', function () {
     expect($tok->type)->toBe(TokenType::Comma);
     expect($tok->value)->toBe(',');
 });
+
+
+it('tokenises valid numbers correctly', function (string $input, float|int  $expected) {
+    $tokenizer = new Tokenizer($input);
+    $token     = $tokenizer->nextToken();
+
+    expect($token)->not()->toBeNull()
+        ->and($token->type)->toBe(TokenType::Number)
+        ->and($token->value)->toBe($expected);
+})->with('validNumbers');
+
+it('tokenises true/false/null', function (string $input, $expectedValue, TokenType $expectedType) {
+    $tokenizer = new Tokenizer($input);
+    $token     = $tokenizer->nextToken();
+
+    expect($token)->not()->toBeNull()
+        ->and($token->type)->toBe($expectedType)
+        ->and($token->value)->toBe($expectedValue);
+})->with('validLiterals');
