@@ -64,5 +64,5 @@ it('should parse unicode escape sequences correctly', function () {
     expect($parser)->toEqual([
         'unicode' => "\u{0123}\u{4567}\u{89AB}\u{CDEF}\u{abcd}\u{ef4A}"
     ]);
-})->only();
+});
 
