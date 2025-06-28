@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JsonParser\Tokenizer;
 use JsonParser\Token;
 use JsonParser\TokenType;
