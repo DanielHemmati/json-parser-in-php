@@ -51,3 +51,18 @@ it('parse valid json into native php values', function (string $json, $expected)
 it('throws RuntimeException on invalid json', function (string $json) {
     (new Parser($json))->parse();
 })->with('invalidJson')->throws(RuntimeException::class);
+
+it('should parse quote correctly', function () {
+    $parser = (new Parser('{"quote":  "\""}'))->parse();
+    expect($parser)->toEqual([
+        'quote' => '"'
+    ]);
+});
+
+it('should parse unicode escape sequences correctly', function () {
+    $parser = (new Parser('{"unicode": "\u0123\u4567\u89AB\uCDEF\uabcd\uef4A"}'))->parse();
+    expect($parser)->toEqual([
+        'unicode' => "\u{0123}\u{4567}\u{89AB}\u{CDEF}\u{abcd}\u{ef4A}"
+    ]);
+})->only();
+
