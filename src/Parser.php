@@ -79,7 +79,7 @@ class Parser
             TokenType::False       => $this->consume(TokenType::False)->value,
             TokenType::Null        => $this->consume(TokenType::Null)->value,
             TokenType::BraceOpen   => $this->parseObject(),
-            // TokenType::BracketOpen => $this->parseArray(),
+            TokenType::BracketOpen => $this->parseArray(),
             default                => throw $this->error("Unexpected token {$this->current->type->value} while parsing value")
         };
     }
@@ -89,23 +89,23 @@ class Parser
         $this->consume(TokenType::BraceOpen);
         $object = [];
 
-        if ($this->current?->type === TokenType::BraceClose){
+        if ($this->current?->type === TokenType::BraceClose) {
             $this->advance();
             return $object;
         }
 
-        while(true) {
+        while (true) {
             $keyTok = $this->consume(TokenType::String); // json must start with "
             $this->consume(TokenType::Colon); // then consume and advance
             $value = $this->parseValue(); // get the value by going throw parseValue again
             $object[$keyTok->value] = $value;
 
-            if($this->current?->type === TokenType::Comma){
+            if ($this->current?->type === TokenType::Comma) {
                 $this->advance();
                 continue;
             }
 
-            if ($this->current?->type === TokenType::BraceClose){
+            if ($this->current?->type === TokenType::BraceClose) {
                 $this->advance();
                 break;
             }
@@ -114,5 +114,34 @@ class Parser
         }
 
         return $object;
+    }
+
+    private function parseArray(): array
+    {
+        $this->consume(TokenType::BracketOpen);
+        $list = [];
+
+        if ($this->current?->type === TokenType::BracketClose) {
+            $this->advance();
+            return $list;
+        }
+
+        while (true) {
+            $list[] = $this->parseValue();
+
+            if ($this->current?->type === TokenType::Comma) {
+                $this->advance();
+                continue;
+            }
+
+            if ($this->current?->type === TokenType::BracketClose) {
+                $this->advance();
+                break;
+            }
+
+            throw $this->error('Expected , or ] in array');
+        }
+
+        return $list;
     }
 }

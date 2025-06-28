@@ -2,21 +2,16 @@
 
 declare(strict_types=1);
 
-// use JsonParser\Tokenizer;
-// use JsonParser\Token;
-// use JsonParser\TokenType;
 use JsonParser\Parser;
 
 it('should parse a empty json', function () {
-    $parser = new Parser('{}');
-    $result = $parser->parse();
-    expect($result)->toBe([]);
+    $parser = (new Parser('{}'))->parse();
+    expect($parser)->toBe([]);
 });
 
 it('parse a json with values', function () {
-    $parser = new Parser('{"name": "Daniel", "x": "daniellhemmati"}');
-    $result = $parser->parse();
-    expect($result)->toBe([
+    $parser = (new Parser('{"name": "Daniel", "x": "daniellhemmati"}'))->parse();
+    expect($parser)->toBe([
         'name' => 'Daniel',
         'x' => 'daniellhemmati'
     ]);
@@ -37,3 +32,22 @@ it('parse a json with nested object', function () {
         ]
     ]);
 });
+
+it('should parse an empty array correctly', function () {
+    $parser = (new Parser('[]'))->parse();
+    expect($parser)->toBe([]);
+});
+
+it('should parse array with values correctly', function () {
+    $parser = (new Parser('["daniel", "hemmati", "php"]'))->parse();
+    expect($parser)->toBe(['daniel', 'hemmati', 'php']);
+});
+
+it('parse valid json into native php values', function (string $json, $expected) {
+    $parser = (new Parser($json))->parse();
+    expect($parser)->toEqual($expected);
+})->with('validJson');
+
+it('throws RuntimeException on invalid json', function (string $json) {
+    (new Parser($json))->parse();
+})->with('invalidJson')->throws(RuntimeException::class);
