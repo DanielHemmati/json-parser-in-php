@@ -148,3 +148,8 @@ it('tokenises true/false/null', function (string $input, $expectedValue, TokenTy
         ->and($token->type)->toBe($expectedType)
         ->and($token->value)->toBe($expectedValue);
 })->with('validLiterals');
+
+it('throws on invalid number', function () {
+    $tokenizer = new Tokenizer('.e');
+    $tokenizer->nextToken();
+})->throws(RuntimeException::class);
