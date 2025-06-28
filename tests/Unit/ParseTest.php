@@ -66,3 +66,12 @@ it('should parse unicode escape sequences correctly', function () {
     ]);
 });
 
+// from fail13.json file
+it('should fail on json that have a leading 0', function () {
+    (new Parser('{"test": 013}'))->parse();
+})->throws(RuntimeException::class);
+
+// from fail25.json and fail27.json
+it('should fail on un-printable characters', function () {
+    (new Parser('["	tab	character	in	string	"]'))->parse();
+})->throws(RuntimeException::class);

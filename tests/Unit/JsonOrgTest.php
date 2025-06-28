@@ -10,3 +10,7 @@ it('parses all JSON.org pass*.json files', function (string $json, $expected) {
     $parsed = (new Parser($json))->parse();
     expect($parsed)->toEqual($expected);
 })->with('jsonOrgPass');
+
+it('throws all JSON.org fail*.json files', function (string $json) {
+    (new Parser($json))->parse();
+})->with('jsonOrgFail')->throws(RuntimeException::class);

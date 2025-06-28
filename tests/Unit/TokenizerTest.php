@@ -88,7 +88,7 @@ it('keeps esace sequence intact', function () {
     $tok = $tokenizer->nextToken();
 
     expect($tok->type)->toBe(TokenType::String);
-    expect($tok->value)->toBe('He said: \\"hi\\"');
+    expect($tok->value)->toBe('He said: "hi"');
 });
 
 
@@ -97,7 +97,7 @@ it('handles unicode escape sequence intact', function () {
 
     $tok = $tokenizer->nextToken();
 
-    expect($tok->value)->toBe('unicode: \\u0041');
+    expect($tok->value)->toBe('unicode: A');
 });
 
 it('throws on unterminated string', function () {

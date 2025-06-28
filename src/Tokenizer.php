@@ -69,6 +69,18 @@ class Tokenizer
         while ($this->pos < $this->length) {
             $ch = $this->input[$this->pos];
 
+            /**
+             * Why 0x20?? b/c anything from 0x00 to 0x20 is un-printable characters.
+             * so if we have any of those in the beginning we are going to just 
+             * throw an error.
+             */
+            if (ord($ch) < 0x20) {
+                throw new \RuntimeException(
+                    "Unescaped control character \\x" . sprintf('%02X', ord($ch)) .
+                        " in string at {$this->line}:{$this->column}"
+                );
+            }
+
             if ($ch === '\\') {
                 $this->advanceCurosr(); // skip the baskslash
                 if ($this->pos >= $this->length) {
@@ -119,7 +131,7 @@ class Tokenizer
     {
         $char = $this->input[$this->pos];
 
-        // if the number if sth like "-7" and you use is_numeric it will call 
+        // if the number if sth like "-7" and you use is_numeric it will be false b/c is_numeric('-') is false
         // the readLiteral intead of readNumber, that's why we use 
         // ctype_digit and we check for the negative using '-"
         if (ctype_digit($char) || $char === '-' || $char === '.') {
@@ -152,9 +164,15 @@ class Tokenizer
 
         $literal = substr($this->input, $start, $this->pos - $start);
 
+        // we added this b/c of fail13.json file.
+        if (preg_match('/^-?0\d/', $literal)) {
+            throw new \RuntimeException("Invalid number format '$literal' at {$startLine}:{$startColumn}");
+        }
+
         if (is_numeric($literal)) {
             return new Token(TokenType::Number, +$literal, $startLine, $startColumn);
         }
+
         throw new \RuntimeException("Invalid number '$literal' at {$startLine}:{$startColumn}");
     }
 
