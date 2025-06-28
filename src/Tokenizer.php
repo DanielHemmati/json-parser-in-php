@@ -70,16 +70,34 @@ class Tokenizer
             $ch = $this->input[$this->pos];
 
             if ($ch === '\\') {
-                $value .= $ch;
-                $this->advanceCurosr();
+                $this->advanceCurosr(); // skip the baskslash
                 if ($this->pos >= $this->length) {
                     throw new \RuntimeException("Unterminated escape sequence at end of input (started {$startLine}:{$startColumn}");
                 }
-                $value .= $this->input[$this->pos];
+
+                $escaped = $this->input[$this->pos];
+                $value .= match ($escaped) {
+                    '"' => '"', // \" -> "
+                    '\\' => '\\', // \\ -> \
+                    '/' => "/", // \/ -> /
+                    'b' => "\x08", // \b -> backspace
+                    'f' => "\x0C", // \f -> form feed
+                    'n' => "\n", // \n -> newline
+                    'r' => "\r",  // \r -> carriage return
+                    't' => "\t", // \t -> tab
+                    'u' => $this->parseUnicodeEscape(), // \xXXXX -> unicode char
+                    default => throw new \RuntimeException("Invalid escape sequence: \\$escaped")
+                };
+
                 $this->advanceCurosr();
+
                 continue;
             }
 
+            /**
+             * The moment we hit the " we are already at the end of string
+             * @link https://www.json.org/json-en.html
+             */
             if ($ch === '"') {
                 break;
             }
@@ -158,6 +176,36 @@ class Tokenizer
             'null' => new Token(TokenType::Null, null, $startLine, $startColumn),
             default => throw new \RuntimeException("Unexptected literal '$literal' at {$startLine}:{$startColumn}")
         };
+    }
+
+    private function parseUnicodeEscape(): string
+    {
+        $hex = '';
+
+        for ($i = 0; $i < 4; $i++) {
+            $this->advanceCurosr(); // we don't want \u itself we care about the next 4
+
+            if ($this->pos >= $this->length) {
+                throw new \RuntimeException(
+                    "Incomplete Unicode escape sequence at {$this->line}:{$this->column}"
+                );
+            }
+
+            $ch = $this->input[$this->pos];
+
+            if (!ctype_xdigit($ch)) {
+                throw new \RuntimeException(
+                    "Invalid Unicode escape sequence: expected hex digit, got '$ch' at {$this->line}:{$this->column}"
+                );
+            }
+
+            $hex .= $ch;
+        }
+
+        // TODO: test this two more
+        $codePoint = hexdec($hex);
+
+        return mb_chr($codePoint, 'UTF-8');
     }
 
     /**
