@@ -1,6 +1,6 @@
 # Json parser in mighty php
 
-![](./art/json-parser-banner.png)
+<img src="./art/json-parser-banner.png" alt="JSON Parser Banner" width="600" />
 
 ## Overview
 
