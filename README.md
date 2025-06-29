@@ -60,6 +60,11 @@ composer install
 
 Contributions are welcome! Please feel free to submit a pull request.
 
+### Todos
+
+- [ ] Show the memory consumption of the parser (use `gc_collect_cycles()` to collect the memory)
+- [ ] Add suppport for not loading all of the json into memory at once (see [read json-machine for study](https://github.com/halaxa/json-machine))
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
