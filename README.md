@@ -1,4 +1,4 @@
-# Json parser in mighty php
+# 🚀 Json parser in mighty php
 
 <p align="center">
     <img src="./art/json-parser-banner.png" alt="JSON Parser Banner" style="width: 70%; max-width: 600px;" />
@@ -12,23 +12,27 @@ If you like to build your own JSON parser and you need to understand how it work
 
 ## Features
 
-- ✅ Parse JSON strings into PHP arrays and objects
-- ✅ Support for all JSON data types:
-  - Strings
-  - Numbers (integers and floats)
+- ✅ **Complete JSON compliance** - Passes the official [JSON.org test suite](https://www.json.org/JSON_checker/)
+- ✅ **Full data type support**:
+  - Strings with escape sequences (`\"`, `\\`, `\/`, `\b`, `\f`, `\n`, `\r`, `\t`)
+  - Numbers (integers, floats, scientific notation: `1e3`, `5.5e-1`)
   - Booleans (`true`/`false`)
   - `null` values
-  - Arrays
-  - Objects
-  - Unicode characters
-  - Binary data
-- ✅ Proper error handling with descriptive error messages
+  - Arrays (nested and empty)
+  - Objects (nested and empty)
+- ✅ **Advanced string parsing**:
+  - Unicode escape sequences (`\uXXXX`)
+  - Control character validation (prevents unescaped control chars)
+- ✅ **Robust number validation**:
+  - Prevents invalid leading zeros (e.g., `013`)
+  - Supports scientific notation (`1e3`, `2e+00`, `5.5e-1`)
+  - Handles negative numbers and decimals
 
 ## Installation
 
 ### Prerequisites
 
-- PHP 8.0 or higher
+- PHP 8.4+
 - Composer
 
 ### Local Setup
