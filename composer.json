@@ -7,6 +7,9 @@
       "email": "danialups1997@gmail.com"
     }
   ],
+  "require": {
+    "php": "^8.4"
+  },
   "autoload": {
     "psr-4": {
       "JsonParser\\": "src/"
