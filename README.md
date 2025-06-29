@@ -1,7 +1,7 @@
 # Json parser in mighty php
 
 <p align="center">
-    <img src="./art/json-parser-banner.png" alt="JSON Parser Banner" style="width: 100%;" />
+    <img src="./art/json-parser-banner.png" alt="JSON Parser Banner" style="width: 100%; max-width: 600px;" />
 </p>
 
 ## Overview
