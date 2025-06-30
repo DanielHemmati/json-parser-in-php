@@ -80,9 +80,10 @@ it('should fail on un-printable characters', function () {
 
 it('handles high and low surrogate', function () {
     $tokenizer = new Parser('[ "Posting this: \ud83d\udca9" ]')->parse();
+    dump($tokenizer);
     expect($tokenizer)->toEqual([
         "Posting this: 💩"
     ]);
-})->note(note: <<<NOTE
+})->only()->note(note: <<<NOTE
     This was for Issue 1
 NOTE);

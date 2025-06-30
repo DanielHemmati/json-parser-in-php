@@ -216,6 +216,7 @@ class Tokenizer
 
             // at this point we have checked the first \uXXXX
             // now it's time to check the second \uYYYY
+            // TODO: this should be better. unfortunately i don't have that much rn 
             $this->advanceCurosr(); // which is backslash
             $this->advanceCurosr(); // which should be \u
 
@@ -229,6 +230,7 @@ class Tokenizer
             }
 
             // ? figure out how does this works exactly
+            // in order to understand this read this blog: https://russellcottrell.com/greek/utilities/SurrogatePairCalculator.htm
             $codePoint = 0x10000 + (($code - 0xD800) << 10) + ($lowCode - 0xDC00);
             return mb_chr($codePoint, 'UTF-8');
         }
