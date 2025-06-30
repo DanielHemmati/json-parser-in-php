@@ -23,3 +23,6 @@ try {
 } catch (\RuntimeException $e) {
     echo "Error parsing JSON: " . $e->getMessage() . "\n";
 }
+
+dump(hexdec("\ud83d") >= 0xD800);
+dump(hexdec("\ud83d") <= 0xDBFF);

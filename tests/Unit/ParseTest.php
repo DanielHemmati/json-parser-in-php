@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use JsonParser\Parser;
+use PhpParser\Node\Expr\BinaryOp\NotEqual;
 
 it('should parse a empty json', function () {
     $parser = (new Parser('{}'))->parse();
@@ -75,3 +76,13 @@ it('should fail on json that have a leading 0', function () {
 it('should fail on un-printable characters', function () {
     (new Parser('["	tab	character	in	string	"]'))->parse();
 })->throws(RuntimeException::class);
+
+
+it('handles high and low surrogate', function () {
+    $tokenizer = new Parser('[ "Posting this: \ud83d\udca9" ]')->parse();
+    expect($tokenizer)->toEqual([
+        "Posting this: 💩"
+    ]);
+})->note(note: <<<NOTE
+    This was for Issue 1
+NOTE);

@@ -97,7 +97,7 @@ class Tokenizer
                     'n' => "\n", // \n -> newline
                     'r' => "\r",  // \r -> carriage return
                     't' => "\t", // \t -> tab
-                    'u' => $this->parseUnicodeEscape(), // \xXXXX -> unicode char
+                    'u' => $this->parseUnicodeEscape(), // \xXXXX -> unicode char (UTF-8)
                     default => throw new \RuntimeException("Invalid escape sequence: \\$escaped")
                 };
 
@@ -196,7 +196,53 @@ class Tokenizer
         };
     }
 
+    /**
+     * In order to understand why we need high surrogate and low surrogate
+     * Do read this two links:
+     * @link https://www.wikiwand.com/en/articles/UTF-16#:~:text=The%20high%20ten,0xDC00%E2%80%930xDFFF.
+     * @link https://www.oilshell.org/blog/2023/06/surrogate-pair.html
+     */
     private function parseUnicodeEscape(): string
+    {
+        $hex = $this->read4HexDigits();
+        $code = hexdec($hex);
+
+        if ($code >= 0xD800 && $code <= 0xDBFF) {
+            if ($this->peek() !== '\\' || $this->peek(1) !== 'u') {
+                throw new \RuntimeException(
+                    "High surrogate \\u$hex not followed by low surrogate at {$this->line}:{$this->column}"
+                );
+            }
+
+            // at this point we have checked the first \uXXXX
+            // now it's time to check the second \uYYYY
+            $this->advanceCurosr(); // which is backslash
+            $this->advanceCurosr(); // which should be \u
+
+            $lowHex = $this->read4HexDigits(); // e.g DAC9
+            $lowCode = hexdec($lowHex);
+
+            if ($lowCode < 0xDC00 || $lowCode > 0xDFFF) {
+                throw new \RuntimeException(
+                    "Expected low surrogate after \\u$hex, got \\u$lowHex at {$this->line}:{$this->column}"
+                );
+            }
+
+            // ? figure out how does this works exactly
+            $codePoint = 0x10000 + (($code - 0xD800) << 10) + ($lowCode - 0xDC00);
+            return mb_chr($codePoint, 'UTF-8');
+        }
+
+        if ($code >= 0xDC00 && $code <= 0xDFFF){
+            throw new \RuntimeException(
+                "Orphan low surrogate \\u$hex at {$this->line}:{$this->column}"
+            );
+        }
+
+        return mb_chr($code, 'UTF-8');
+    }
+
+    private function read4HexDigits(): string
     {
         $hex = '';
 
@@ -219,11 +265,13 @@ class Tokenizer
 
             $hex .= $ch;
         }
+        return $hex;
+    }
 
-        // TODO: test this two more
-        $codePoint = hexdec($hex);
-
-        return mb_chr($codePoint, 'UTF-8');
+    private function peek(int $offset = 0): ?string
+    {
+        $idx = $this->pos + 1 + $offset;
+        return $idx < $this->length ? $this->input[$idx] : null;
     }
 
     /**
