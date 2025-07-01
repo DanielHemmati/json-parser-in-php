@@ -64,6 +64,7 @@ Contributions are welcome! Please feel free to submit a pull request.
 
 - [ ] Show the memory consumption of the parser (use `gc_collect_cycles()` to collect the memory)
 - [ ] Add suppport for not loading all of the json into memory at once (see [read json-machine for study](https://github.com/halaxa/json-machine), also [mlebkowski showed his parser](https://github.com/mlebkowski/advent-of-code-php/tree/main/src/Solutions/Y2017/D09) Good place to get deeper into parser)
+- [ ] Add pint & phpstan
 
 ## License
 
