@@ -22,7 +22,8 @@
   },
   "require-dev": {
     "pestphp/pest": "^3.8",
-    "symfony/var-dumper": "^7.3"
+    "symfony/var-dumper": "^7.3",
+    "phpbench/phpbench": "^1.4"
   },
   "config": {
     "allow-plugins": {
