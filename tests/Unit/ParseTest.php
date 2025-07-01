@@ -5,6 +5,14 @@ declare(strict_types=1);
 use JsonParser\Parser;
 use PhpParser\Node\Expr\BinaryOp\NotEqual;
 
+it('should crash on invalid usage', function () {
+    $parser = new Parser('{}');
+    $result = $parser->parse();
+
+    expect(fn () => $parser->parse())
+        ->toThrow(RuntimeException::class, 'Unexpected end of input while parsing value');
+});
+
 it('should parse a empty json', function () {
     $parser = (new Parser('{}'))->parse();
     expect($parser)->toBe([]);
